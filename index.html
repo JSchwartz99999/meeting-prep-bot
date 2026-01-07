@@ -12,7 +12,7 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>Meeting Prep Bot | Prep Pro v3</title>
+    <title>Meeting Prep Bot | Prep Pro v4</title>
 
     <!-- Preconnect for performance -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1029,12 +1029,12 @@
     <!-- Skip link for accessibility -->
     <a href="#main-content" class="skip-link">Skip to main content</a>
 
-    <div class="app-container">
+    <div class="app-container" style="display: grid; grid-template-columns: 280px 1fr; min-height: 100vh;">
         <!-- Mobile sidebar backdrop -->
         <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
 
         <!-- Sidebar -->
-        <aside class="sidebar" id="sidebar" role="complementary" aria-label="Navigation sidebar">
+        <aside class="sidebar" id="sidebar" role="complementary" aria-label="Navigation sidebar" style="width: 280px; flex-shrink: 0;">
             <div class="sidebar-header">
                 <div class="logo" aria-hidden="true">📋</div>
                 <div class="brand">
@@ -1056,7 +1056,7 @@
         </aside>
 
         <!-- Main Content -->
-        <main class="main-content" id="main-content">
+        <main class="main-content" id="main-content" style="flex: 1; display: flex; flex-direction: column; min-width: 0;">
             <header class="header">
                 <h2 class="header-title">Meeting Preparation</h2>
                 <div class="header-actions">
