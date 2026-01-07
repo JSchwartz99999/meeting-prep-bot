@@ -1321,11 +1321,18 @@
         }
     </style>
 
-    <!-- docx.js for Word export - using jsDelivr CDN with UMD bundle -->
-    <script src="https://cdn.jsdelivr.net/npm/docx@7.8.2/build/index.umd.min.js"></script>
-
     <script>
         'use strict';
+
+        // Load docx library asynchronously to prevent blocking
+        var docxLoaded = false;
+        (function() {
+            var script = document.createElement('script');
+            script.src = 'https://cdn.jsdelivr.net/npm/docx@7.8.2/build/index.umd.min.js';
+            script.onload = function() { docxLoaded = true; };
+            script.onerror = function() { /* Word export will be disabled */ };
+            document.head.appendChild(script);
+        })();
 
         // State management with immutable patterns
         const AppState = {
@@ -2154,6 +2161,12 @@ ${data.suggestedAgenda}
         // Export to Word
         async function exportToWord() {
             if (!AppState.currentPrep) return;
+
+            // Check if docx library is loaded
+            if (typeof docx === 'undefined') {
+                showToast('Word export is loading, please try again', 'error');
+                return;
+            }
 
             try {
                 const data = AppState.currentPrep.data;
