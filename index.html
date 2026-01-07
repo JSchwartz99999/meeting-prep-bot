@@ -1027,7 +1027,7 @@
 
     <div class="app-container">
         <!-- Mobile sidebar backdrop -->
-        <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="closeSidebar()"></div>
+        <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
 
         <!-- Sidebar -->
         <aside class="sidebar" id="sidebar" role="complementary" aria-label="Navigation sidebar">
@@ -1039,7 +1039,7 @@
                 </div>
             </div>
 
-            <button class="new-prep-btn" onclick="startNewPrep()" aria-label="Create new meeting prep">
+            <button class="new-prep-btn" id="newPrepBtn" aria-label="Create new meeting prep">
                 <span aria-hidden="true">+</span> New Meeting Prep
             </button>
 
@@ -1056,7 +1056,7 @@
             <header class="header">
                 <h2 class="header-title">Meeting Preparation</h2>
                 <div class="header-actions">
-                    <button class="settings-btn" onclick="openSettings()" aria-label="Open API settings">
+                    <button class="settings-btn" id="settingsBtn" aria-label="Open API settings">
                         <span aria-hidden="true">⚙️</span> API Settings
                     </button>
                 </div>
@@ -1069,7 +1069,7 @@
                         <h2 class="form-title">Prepare for Your Meeting</h2>
                         <p class="form-subtitle">Enter meeting details and we'll generate a comprehensive prep brief</p>
 
-                        <form id="prepForm" onsubmit="handleFormSubmit(event)" novalidate>
+                        <form id="prepForm" novalidate>
                             <div class="form-grid">
                                 <div class="form-group">
                                     <label for="companyName">
@@ -1213,16 +1213,16 @@
                             <p id="outputSubtitle">Generated prep for your upcoming meeting</p>
                         </div>
                         <div class="output-actions">
-                            <button class="action-btn secondary" onclick="startNewPrep()" aria-label="Create new prep">
+                            <button class="action-btn secondary" id="newPrepFromOutput" aria-label="Create new prep">
                                 <span aria-hidden="true">+</span> New
                             </button>
-                            <button class="action-btn" onclick="copyToClipboard()" aria-label="Copy all content to clipboard">
+                            <button class="action-btn" id="copyBtn" aria-label="Copy all content to clipboard">
                                 <span aria-hidden="true">📋</span> Copy All
                             </button>
-                            <button class="action-btn" onclick="exportToWord()" aria-label="Export to Word document">
+                            <button class="action-btn" id="exportBtn" aria-label="Export to Word document">
                                 <span aria-hidden="true">📄</span> Export Word
                             </button>
-                            <button class="action-btn primary" onclick="savePrep()" aria-label="Save meeting prep">
+                            <button class="action-btn primary" id="saveBtn" aria-label="Save meeting prep">
                                 <span aria-hidden="true">💾</span> Save
                             </button>
                         </div>
@@ -1238,7 +1238,7 @@
     </div>
 
     <!-- Mobile menu button -->
-    <button class="mobile-menu-btn" onclick="toggleSidebar()" aria-label="Toggle navigation menu" aria-expanded="false">
+    <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle navigation menu" aria-expanded="false">
         ☰
     </button>
 
@@ -1257,13 +1257,13 @@
                     spellcheck="false"
                     aria-label="API Key"
                 >
-                <button type="button" class="api-key-toggle" onclick="toggleApiKeyVisibility()" aria-label="Toggle API key visibility">
+                <button type="button" class="api-key-toggle" id="apiKeyToggle" aria-label="Toggle API key visibility">
                     👁️
                 </button>
             </div>
             <div class="modal-actions">
-                <button class="modal-btn cancel" onclick="closeSettings()">Cancel</button>
-                <button class="modal-btn save" onclick="saveApiKey()">Save Key</button>
+                <button class="modal-btn cancel" id="settingsCancelBtn">Cancel</button>
+                <button class="modal-btn save" id="settingsSaveBtn">Save Key</button>
             </div>
         </div>
     </div>
@@ -1282,8 +1282,8 @@
                 aria-label="Prep name"
             >
             <div class="modal-actions">
-                <button class="modal-btn cancel" onclick="closeSaveModal()">Cancel</button>
-                <button class="modal-btn save" onclick="confirmSave()">Save</button>
+                <button class="modal-btn cancel" id="saveCancelBtn">Cancel</button>
+                <button class="modal-btn save" id="saveConfirmBtn">Save</button>
             </div>
         </div>
     </div>
@@ -1294,8 +1294,8 @@
             <h3 class="modal-title" id="delete-title">Delete Meeting Prep?</h3>
             <p class="modal-subtitle">This action cannot be undone. The prep will be permanently removed from your history.</p>
             <div class="modal-actions">
-                <button class="modal-btn cancel" onclick="closeDeleteModal()">Cancel</button>
-                <button class="modal-btn danger" onclick="confirmDelete()">Delete</button>
+                <button class="modal-btn cancel" id="deleteCancelBtn">Cancel</button>
+                <button class="modal-btn danger" id="deleteConfirmBtn">Delete</button>
             </div>
         </div>
     </div>
@@ -1368,12 +1368,74 @@
             setupCharacterCounters();
             setupFormValidation();
             setupKeyboardNavigation();
+            setupEventListeners();
 
             // Check for API key
             const apiKey = getStoredApiKey();
             if (!apiKey) {
                 setTimeout(() => openSettings(), 500);
             }
+        }
+
+        // Setup all event listeners (more reliable than inline onclick)
+        function setupEventListeners() {
+            // Sidebar buttons
+            const newPrepBtn = document.getElementById('newPrepBtn');
+            if (newPrepBtn) newPrepBtn.addEventListener('click', startNewPrep);
+
+            const sidebarBackdrop = document.getElementById('sidebarBackdrop');
+            if (sidebarBackdrop) sidebarBackdrop.addEventListener('click', closeSidebar);
+
+            // Header buttons
+            const settingsBtn = document.getElementById('settingsBtn');
+            if (settingsBtn) settingsBtn.addEventListener('click', openSettings);
+
+            // Output panel buttons
+            const newPrepFromOutput = document.getElementById('newPrepFromOutput');
+            if (newPrepFromOutput) newPrepFromOutput.addEventListener('click', startNewPrep);
+
+            const copyBtn = document.getElementById('copyBtn');
+            if (copyBtn) copyBtn.addEventListener('click', copyToClipboard);
+
+            const exportBtn = document.getElementById('exportBtn');
+            if (exportBtn) exportBtn.addEventListener('click', exportToWord);
+
+            const saveBtn = document.getElementById('saveBtn');
+            if (saveBtn) saveBtn.addEventListener('click', savePrep);
+
+            // Mobile menu
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            if (mobileMenuBtn) mobileMenuBtn.addEventListener('click', toggleSidebar);
+
+            // Settings modal buttons
+            const apiKeyToggle = document.getElementById('apiKeyToggle');
+            if (apiKeyToggle) apiKeyToggle.addEventListener('click', toggleApiKeyVisibility);
+
+            const settingsCancelBtn = document.getElementById('settingsCancelBtn');
+            if (settingsCancelBtn) settingsCancelBtn.addEventListener('click', closeSettings);
+
+            const settingsSaveBtn = document.getElementById('settingsSaveBtn');
+            if (settingsSaveBtn) settingsSaveBtn.addEventListener('click', saveApiKey);
+
+            // Save modal buttons
+            const saveCancelBtn = document.getElementById('saveCancelBtn');
+            if (saveCancelBtn) saveCancelBtn.addEventListener('click', closeSaveModal);
+
+            const saveConfirmBtn = document.getElementById('saveConfirmBtn');
+            if (saveConfirmBtn) saveConfirmBtn.addEventListener('click', confirmSave);
+
+            // Delete modal buttons
+            const deleteCancelBtn = document.getElementById('deleteCancelBtn');
+            if (deleteCancelBtn) deleteCancelBtn.addEventListener('click', closeDeleteModal);
+
+            const deleteConfirmBtn = document.getElementById('deleteConfirmBtn');
+            if (deleteConfirmBtn) deleteConfirmBtn.addEventListener('click', confirmDelete);
+
+            // Form submission
+            const prepForm = document.getElementById('prepForm');
+            if (prepForm) prepForm.addEventListener('submit', handleFormSubmit);
+
+            console.log('Event listeners initialized');
         }
 
         // Secure storage functions
