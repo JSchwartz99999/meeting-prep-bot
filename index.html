@@ -1039,7 +1039,7 @@
                 </div>
             </div>
 
-            <button class="new-prep-btn" id="newPrepBtn" aria-label="Create new meeting prep">
+            <button class="new-prep-btn" id="newPrepBtn" aria-label="Create new meeting prep" onclick="startNewPrep()">
                 <span aria-hidden="true">+</span> New Meeting Prep
             </button>
 
@@ -1056,7 +1056,7 @@
             <header class="header">
                 <h2 class="header-title">Meeting Preparation</h2>
                 <div class="header-actions">
-                    <button class="settings-btn" id="settingsBtn" aria-label="Open API settings">
+                    <button class="settings-btn" id="settingsBtn" aria-label="Open API settings" onclick="openSettings()">
                         <span aria-hidden="true">⚙️</span> API Settings
                     </button>
                 </div>
@@ -1322,6 +1322,10 @@
     </style>
 
     <script>
+        // DEBUG: Show that JavaScript is running
+        document.body.insertAdjacentHTML('afterbegin', '<div id="debugBanner" style="position:fixed;top:0;left:0;right:0;background:#10b981;color:white;padding:10px;text-align:center;z-index:99999;font-size:14px;">JS Loaded - Click anywhere to dismiss</div>');
+        document.getElementById('debugBanner').onclick = function() { this.remove(); };
+
         // State management
         var AppState = {
             currentPrep: null,
