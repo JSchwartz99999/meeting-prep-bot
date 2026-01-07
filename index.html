@@ -1,0 +1,1409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meeting Prep Bot | Prep Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+            min-height: 100vh;
+            color: #e2e8f0;
+        }
+
+        .app-container {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background: rgba(15, 23, 42, 0.95);
+            border-right: 1px solid rgba(148, 163, 184, 0.1);
+            padding: 24px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px;
+            margin-bottom: 8px;
+        }
+
+        .logo {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .brand h1 {
+            font-size: 18px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #8b5cf6, #06b6d4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .brand span {
+            font-size: 11px;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .new-prep-btn {
+            background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+            border: none;
+            padding: 14px 20px;
+            border-radius: 12px;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .new-prep-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(139, 92, 246, 0.4);
+        }
+
+        .sidebar-section {
+            margin-top: 8px;
+        }
+
+        .sidebar-section-title {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #64748b;
+            padding: 8px 12px;
+            font-weight: 600;
+        }
+
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .history-item {
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+        }
+
+        .history-item:hover {
+            background: rgba(139, 92, 246, 0.1);
+            border-color: rgba(139, 92, 246, 0.2);
+        }
+
+        .history-item.active {
+            background: rgba(139, 92, 246, 0.15);
+            border-color: rgba(139, 92, 246, 0.3);
+        }
+
+        .history-item-title {
+            font-size: 13px;
+            font-weight: 500;
+            color: #e2e8f0;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .history-item-meta {
+            font-size: 11px;
+            color: #64748b;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .history-empty {
+            padding: 20px;
+            text-align: center;
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        /* Main Content */
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .header {
+            padding: 20px 32px;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(15, 23, 42, 0.5);
+            backdrop-filter: blur(10px);
+        }
+
+        .header-title {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .settings-btn {
+            background: rgba(148, 163, 184, 0.1);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            padding: 10px 16px;
+            border-radius: 8px;
+            color: #e2e8f0;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .settings-btn:hover {
+            background: rgba(148, 163, 184, 0.2);
+        }
+
+        .content-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 32px;
+        }
+
+        /* Form Panel */
+        .form-panel {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .form-card {
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(148, 163, 184, 0.1);
+            border-radius: 16px;
+            padding: 32px;
+            backdrop-filter: blur(10px);
+        }
+
+        .form-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #8b5cf6, #06b6d4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .form-subtitle {
+            color: #94a3b8;
+            font-size: 14px;
+            margin-bottom: 32px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-group label {
+            font-size: 13px;
+            font-weight: 500;
+            color: #cbd5e1;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 10px;
+            padding: 14px 16px;
+            color: #e2e8f0;
+            font-size: 14px;
+            font-family: inherit;
+            transition: all 0.2s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #8b5cf6;
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
+        }
+
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: #64748b;
+        }
+
+        .form-group select {
+            cursor: pointer;
+        }
+
+        .form-group select option {
+            background: #1e293b;
+            color: #e2e8f0;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .generate-btn {
+            background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+            border: none;
+            padding: 16px 32px;
+            border-radius: 12px;
+            color: white;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 24px;
+            width: 100%;
+        }
+
+        .generate-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(139, 92, 246, 0.4);
+        }
+
+        .generate-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .generate-btn .spinner {
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Output Panel */
+        .output-panel {
+            display: none;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .output-panel.visible {
+            display: block;
+        }
+
+        .output-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .output-title-section h2 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .output-title-section p {
+            color: #94a3b8;
+            font-size: 14px;
+        }
+
+        .output-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .action-btn {
+            background: rgba(148, 163, 184, 0.1);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            padding: 10px 16px;
+            border-radius: 8px;
+            color: #e2e8f0;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .action-btn:hover {
+            background: rgba(148, 163, 184, 0.2);
+        }
+
+        .action-btn.primary {
+            background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+            border: none;
+        }
+
+        .action-btn.primary:hover {
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+        }
+
+        .prep-content {
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(148, 163, 184, 0.1);
+            border-radius: 16px;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .prep-section {
+            padding: 24px;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+        }
+
+        .prep-section:last-child {
+            border-bottom: none;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .section-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .section-icon.company { background: rgba(59, 130, 246, 0.2); }
+        .section-icon.news { background: rgba(16, 185, 129, 0.2); }
+        .section-icon.talking { background: rgba(245, 158, 11, 0.2); }
+        .section-icon.pain { background: rgba(239, 68, 68, 0.2); }
+        .section-icon.questions { background: rgba(139, 92, 246, 0.2); }
+        .section-icon.agenda { background: rgba(6, 182, 212, 0.2); }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .section-body {
+            color: #cbd5e1;
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        .section-body[contenteditable="true"] {
+            padding: 12px;
+            border-radius: 8px;
+            background: rgba(15, 23, 42, 0.4);
+            border: 1px solid transparent;
+            transition: all 0.2s ease;
+        }
+
+        .section-body[contenteditable="true"]:hover {
+            border-color: rgba(148, 163, 184, 0.2);
+        }
+
+        .section-body[contenteditable="true"]:focus {
+            outline: none;
+            border-color: #8b5cf6;
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+        }
+
+        .section-body ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        .section-body li {
+            margin-bottom: 8px;
+        }
+
+        .section-body li:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: #1e293b;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 16px;
+            padding: 32px;
+            width: 90%;
+            max-width: 500px;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.visible .modal {
+            transform: translateY(0);
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .modal-subtitle {
+            color: #94a3b8;
+            font-size: 14px;
+            margin-bottom: 24px;
+        }
+
+        .modal-input {
+            width: 100%;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 10px;
+            padding: 14px 16px;
+            color: #e2e8f0;
+            font-size: 14px;
+            font-family: inherit;
+            margin-bottom: 24px;
+        }
+
+        .modal-input:focus {
+            outline: none;
+            border-color: #8b5cf6;
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+
+        .modal-btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .modal-btn.cancel {
+            background: transparent;
+            border: 1px solid rgba(148, 163, 184, 0.3);
+            color: #94a3b8;
+        }
+
+        .modal-btn.cancel:hover {
+            background: rgba(148, 163, 184, 0.1);
+        }
+
+        .modal-btn.save {
+            background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+            border: none;
+            color: white;
+        }
+
+        .modal-btn.save:hover {
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .app-container {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                display: none;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: #1e293b;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 12px;
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 1001;
+        }
+
+        .toast.visible {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast.success {
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+
+        .toast-icon {
+            font-size: 20px;
+        }
+
+        .toast-message {
+            font-size: 14px;
+            color: #e2e8f0;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">📋</div>
+                <div class="brand">
+                    <h1>Prep Pro</h1>
+                    <span>Meeting Assistant</span>
+                </div>
+            </div>
+
+            <button class="new-prep-btn" onclick="startNewPrep()">
+                <span>+</span> New Meeting Prep
+            </button>
+
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Recent Preps</div>
+                <div class="history-list" id="historyList">
+                    <div class="history-empty">No saved preps yet</div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="header">
+                <h2 class="header-title">Meeting Preparation</h2>
+                <button class="settings-btn" onclick="openSettings()">
+                    <span>⚙️</span> API Settings
+                </button>
+            </header>
+
+            <div class="content-area">
+                <!-- Input Form -->
+                <div class="form-panel" id="formPanel">
+                    <div class="form-card">
+                        <h2 class="form-title">Prepare for Your Meeting</h2>
+                        <p class="form-subtitle">Enter meeting details and we'll generate a comprehensive prep brief</p>
+
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="companyName">Company Name *</label>
+                                <input type="text" id="companyName" placeholder="e.g., Acme Corporation">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="contactName">Contact Name</label>
+                                <input type="text" id="contactName" placeholder="e.g., John Smith">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="contactTitle">Contact Title</label>
+                                <input type="text" id="contactTitle" placeholder="e.g., VP of Sales">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="meetingType">Meeting Type *</label>
+                                <select id="meetingType">
+                                    <option value="">Select meeting type...</option>
+                                    <option value="discovery">Discovery Call</option>
+                                    <option value="demo">Product Demo</option>
+                                    <option value="negotiation">Negotiation</option>
+                                    <option value="qbr">Quarterly Business Review</option>
+                                    <option value="renewal">Renewal Discussion</option>
+                                    <option value="upsell">Upsell/Expansion</option>
+                                    <option value="executive">Executive Briefing</option>
+                                    <option value="kickoff">Project Kickoff</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="industry">Industry</label>
+                                <input type="text" id="industry" placeholder="e.g., Healthcare, Finance, Tech">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="dealSize">Deal Size (if known)</label>
+                                <input type="text" id="dealSize" placeholder="e.g., $50,000 ARR">
+                            </div>
+
+                            <div class="form-group full-width">
+                                <label for="context">Additional Context</label>
+                                <textarea id="context" placeholder="Any additional information: previous interactions, known challenges, goals for this meeting, competitors involved, etc."></textarea>
+                            </div>
+
+                            <div class="form-group full-width">
+                                <label for="yourProduct">Your Product/Service (optional)</label>
+                                <textarea id="yourProduct" placeholder="Brief description of what you're selling - this helps generate more relevant talking points"></textarea>
+                            </div>
+                        </div>
+
+                        <button class="generate-btn" id="generateBtn" onclick="generatePrep()">
+                            <span>🚀</span> Generate Meeting Prep
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Output Panel -->
+                <div class="output-panel" id="outputPanel">
+                    <div class="output-header">
+                        <div class="output-title-section">
+                            <h2 id="outputTitle">Meeting Prep Brief</h2>
+                            <p id="outputSubtitle">Generated prep for your upcoming meeting</p>
+                        </div>
+                        <div class="output-actions">
+                            <button class="action-btn" onclick="copyToClipboard()">
+                                <span>📋</span> Copy All
+                            </button>
+                            <button class="action-btn" onclick="exportToWord()">
+                                <span>📄</span> Export Word
+                            </button>
+                            <button class="action-btn primary" onclick="savePrep()">
+                                <span>💾</span> Save
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="prep-content" id="prepContent">
+                        <!-- Sections will be dynamically inserted -->
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Settings Modal -->
+    <div class="modal-overlay" id="settingsModal">
+        <div class="modal">
+            <h3 class="modal-title">API Settings</h3>
+            <p class="modal-subtitle">Enter your Anthropic API key to use the AI features</p>
+            <input type="password" class="modal-input" id="apiKeyInput" placeholder="sk-ant-...">
+            <div class="modal-actions">
+                <button class="modal-btn cancel" onclick="closeSettings()">Cancel</button>
+                <button class="modal-btn save" onclick="saveApiKey()">Save Key</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Save Modal -->
+    <div class="modal-overlay" id="saveModal">
+        <div class="modal">
+            <h3 class="modal-title">Save Meeting Prep</h3>
+            <p class="modal-subtitle">Give this prep a name for easy reference</p>
+            <input type="text" class="modal-input" id="prepNameInput" placeholder="e.g., Acme Q1 Discovery">
+            <div class="modal-actions">
+                <button class="modal-btn cancel" onclick="closeSaveModal()">Cancel</button>
+                <button class="modal-btn save" onclick="confirmSave()">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast">
+        <span class="toast-icon">✓</span>
+        <span class="toast-message" id="toastMessage">Success!</span>
+    </div>
+
+    <!-- docx.js for Word export -->
+    <script src="https://unpkg.com/docx@8.2.2/build/index.js"></script>
+
+    <script>
+        // State
+        let currentPrep = null;
+        let prepHistory = [];
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadHistory();
+            loadSavedProduct();
+
+            // Check for API key
+            const apiKey = localStorage.getItem('prepPro_apiKey');
+            if (!apiKey) {
+                setTimeout(() => openSettings(), 500);
+            }
+        });
+
+        // Load saved product description
+        function loadSavedProduct() {
+            const savedProduct = localStorage.getItem('prepPro_product');
+            if (savedProduct) {
+                document.getElementById('yourProduct').value = savedProduct;
+            }
+        }
+
+        // Save product description
+        function saveProduct() {
+            const product = document.getElementById('yourProduct').value;
+            if (product.trim()) {
+                localStorage.setItem('prepPro_product', product);
+            }
+        }
+
+        // Load history from localStorage
+        function loadHistory() {
+            const saved = localStorage.getItem('prepPro_history');
+            if (saved) {
+                prepHistory = JSON.parse(saved);
+                renderHistory();
+            }
+        }
+
+        // Render history sidebar
+        function renderHistory() {
+            const container = document.getElementById('historyList');
+
+            if (prepHistory.length === 0) {
+                container.innerHTML = '<div class="history-empty">No saved preps yet</div>';
+                return;
+            }
+
+            container.innerHTML = prepHistory.map((prep, index) => `
+                <div class="history-item ${currentPrep && currentPrep.id === prep.id ? 'active' : ''}" onclick="loadPrep(${index})">
+                    <div class="history-item-title">${prep.name}</div>
+                    <div class="history-item-meta">
+                        <span>${prep.company}</span>
+                        <span>${formatDate(prep.date)}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Format date
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        }
+
+        // Load a saved prep
+        function loadPrep(index) {
+            currentPrep = prepHistory[index];
+            displayPrep(currentPrep);
+            renderHistory();
+        }
+
+        // Start new prep
+        function startNewPrep() {
+            currentPrep = null;
+            document.getElementById('formPanel').style.display = 'block';
+            document.getElementById('outputPanel').classList.remove('visible');
+
+            // Clear form
+            document.getElementById('companyName').value = '';
+            document.getElementById('contactName').value = '';
+            document.getElementById('contactTitle').value = '';
+            document.getElementById('meetingType').value = '';
+            document.getElementById('industry').value = '';
+            document.getElementById('dealSize').value = '';
+            document.getElementById('context').value = '';
+
+            renderHistory();
+        }
+
+        // Generate prep
+        async function generatePrep() {
+            const companyName = document.getElementById('companyName').value.trim();
+            const contactName = document.getElementById('contactName').value.trim();
+            const contactTitle = document.getElementById('contactTitle').value.trim();
+            const meetingType = document.getElementById('meetingType').value;
+            const industry = document.getElementById('industry').value.trim();
+            const dealSize = document.getElementById('dealSize').value.trim();
+            const context = document.getElementById('context').value.trim();
+            const yourProduct = document.getElementById('yourProduct').value.trim();
+
+            // Validation
+            if (!companyName) {
+                showToast('Please enter the company name', 'error');
+                return;
+            }
+            if (!meetingType) {
+                showToast('Please select a meeting type', 'error');
+                return;
+            }
+
+            const apiKey = localStorage.getItem('prepPro_apiKey');
+            if (!apiKey) {
+                openSettings();
+                return;
+            }
+
+            // Save product for future use
+            saveProduct();
+
+            // Show loading state
+            const btn = document.getElementById('generateBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<div class="spinner"></div> Researching...';
+
+            const meetingTypeLabels = {
+                'discovery': 'Discovery Call',
+                'demo': 'Product Demo',
+                'negotiation': 'Negotiation',
+                'qbr': 'Quarterly Business Review',
+                'renewal': 'Renewal Discussion',
+                'upsell': 'Upsell/Expansion',
+                'executive': 'Executive Briefing',
+                'kickoff': 'Project Kickoff',
+                'other': 'General Meeting'
+            };
+
+            const prompt = `You are a strategic sales preparation assistant helping a Director of Strategic Accounts prepare for an important meeting.
+
+MEETING DETAILS:
+- Company: ${companyName}
+- Contact: ${contactName || 'Not specified'}${contactTitle ? ` (${contactTitle})` : ''}
+- Meeting Type: ${meetingTypeLabels[meetingType]}
+- Industry: ${industry || 'Not specified'}
+- Deal Size: ${dealSize || 'Not specified'}
+${yourProduct ? `- Product/Service Being Sold: ${yourProduct}` : ''}
+${context ? `- Additional Context: ${context}` : ''}
+
+Please generate a comprehensive meeting preparation brief with the following sections. For each section, provide specific, actionable intelligence:
+
+1. **COMPANY OVERVIEW**
+Provide a strategic overview of ${companyName} including:
+- What the company does and their market position
+- Key business metrics if publicly known (size, revenue, employees)
+- Recent strategic initiatives or company direction
+- Relevant information about their tech stack or operations
+
+2. **RECENT NEWS & DEVELOPMENTS**
+List 3-5 recent or notable developments about the company that could be relevant to the meeting:
+- Recent announcements, partnerships, or initiatives
+- Leadership changes
+- Industry trends affecting them
+- Any challenges or opportunities they may be facing
+
+3. **TALKING POINTS**
+Provide 5-7 strategic talking points tailored for a ${meetingTypeLabels[meetingType]}:
+- Opening conversation starters
+- Key value propositions to emphasize
+- Specific angles based on their industry/situation
+- Ways to connect your solution to their needs
+
+4. **POTENTIAL PAIN POINTS**
+Identify 4-6 likely pain points or challenges this company/contact may be experiencing:
+- Industry-specific challenges
+- Role-specific challenges for a ${contactTitle || 'decision-maker'}
+- Common problems for companies in their situation
+- Areas where your solution might provide value
+
+5. **QUESTIONS TO ASK**
+Provide 6-8 strategic questions to ask during the meeting:
+- Discovery questions to understand their situation
+- Qualification questions
+- Questions that position you as a trusted advisor
+- Questions specific to a ${meetingTypeLabels[meetingType]}
+
+6. **SUGGESTED AGENDA**
+Provide a recommended meeting agenda with time allocations for a 30-45 minute ${meetingTypeLabels[meetingType]}
+
+Format your response as JSON with this structure:
+{
+    "companyOverview": "...",
+    "recentNews": ["item1", "item2", ...],
+    "talkingPoints": ["point1", "point2", ...],
+    "painPoints": ["pain1", "pain2", ...],
+    "questionsToAsk": ["question1", "question2", ...],
+    "suggestedAgenda": "..."
+}
+
+Be specific, strategic, and actionable. Avoid generic advice. Tailor everything to this specific company and meeting type.`;
+
+            try {
+                const response = await fetch('https://api.anthropic.com/v1/messages', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-api-key': apiKey,
+                        'anthropic-version': '2023-06-01',
+                        'anthropic-dangerous-direct-browser-access': 'true'
+                    },
+                    body: JSON.stringify({
+                        model: 'claude-sonnet-4-20250514',
+                        max_tokens: 4000,
+                        messages: [{
+                            role: 'user',
+                            content: prompt
+                        }]
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error?.message || 'API request failed');
+                }
+
+                const data = await response.json();
+                const content = data.content[0].text;
+
+                // Parse JSON from response
+                const jsonMatch = content.match(/\{[\s\S]*\}/);
+                if (!jsonMatch) {
+                    throw new Error('Failed to parse response');
+                }
+
+                const prepData = JSON.parse(jsonMatch[0]);
+
+                // Create prep object
+                currentPrep = {
+                    id: Date.now(),
+                    name: `${companyName} - ${meetingTypeLabels[meetingType]}`,
+                    company: companyName,
+                    contact: contactName,
+                    contactTitle: contactTitle,
+                    meetingType: meetingTypeLabels[meetingType],
+                    industry: industry,
+                    dealSize: dealSize,
+                    date: new Date().toISOString(),
+                    data: prepData
+                };
+
+                displayPrep(currentPrep);
+
+            } catch (error) {
+                console.error('Error:', error);
+                showToast(error.message || 'Failed to generate prep', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<span>🚀</span> Generate Meeting Prep';
+            }
+        }
+
+        // Display prep
+        function displayPrep(prep) {
+            document.getElementById('formPanel').style.display = 'none';
+            document.getElementById('outputPanel').classList.add('visible');
+
+            document.getElementById('outputTitle').textContent = prep.name;
+            document.getElementById('outputSubtitle').textContent =
+                `${prep.meetingType} with ${prep.contact || prep.company}${prep.contactTitle ? ` (${prep.contactTitle})` : ''}`;
+
+            const container = document.getElementById('prepContent');
+            const data = prep.data;
+
+            container.innerHTML = `
+                <div class="prep-section">
+                    <div class="section-header">
+                        <div class="section-icon company">🏢</div>
+                        <h3 class="section-title">Company Overview</h3>
+                    </div>
+                    <div class="section-body" contenteditable="true" data-section="companyOverview">
+                        ${data.companyOverview}
+                    </div>
+                </div>
+
+                <div class="prep-section">
+                    <div class="section-header">
+                        <div class="section-icon news">📰</div>
+                        <h3 class="section-title">Recent News & Developments</h3>
+                    </div>
+                    <div class="section-body" contenteditable="true" data-section="recentNews">
+                        <ul>
+                            ${data.recentNews.map(item => `<li>${item}</li>`).join('')}
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="prep-section">
+                    <div class="section-header">
+                        <div class="section-icon talking">💬</div>
+                        <h3 class="section-title">Talking Points</h3>
+                    </div>
+                    <div class="section-body" contenteditable="true" data-section="talkingPoints">
+                        <ul>
+                            ${data.talkingPoints.map(item => `<li>${item}</li>`).join('')}
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="prep-section">
+                    <div class="section-header">
+                        <div class="section-icon pain">🎯</div>
+                        <h3 class="section-title">Potential Pain Points</h3>
+                    </div>
+                    <div class="section-body" contenteditable="true" data-section="painPoints">
+                        <ul>
+                            ${data.painPoints.map(item => `<li>${item}</li>`).join('')}
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="prep-section">
+                    <div class="section-header">
+                        <div class="section-icon questions">❓</div>
+                        <h3 class="section-title">Questions to Ask</h3>
+                    </div>
+                    <div class="section-body" contenteditable="true" data-section="questionsToAsk">
+                        <ul>
+                            ${data.questionsToAsk.map(item => `<li>${item}</li>`).join('')}
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="prep-section">
+                    <div class="section-header">
+                        <div class="section-icon agenda">📅</div>
+                        <h3 class="section-title">Suggested Agenda</h3>
+                    </div>
+                    <div class="section-body" contenteditable="true" data-section="suggestedAgenda">
+                        ${data.suggestedAgenda.replace(/\n/g, '<br>')}
+                    </div>
+                </div>
+            `;
+        }
+
+        // Save prep
+        function savePrep() {
+            if (!currentPrep) return;
+
+            document.getElementById('prepNameInput').value = currentPrep.name;
+            document.getElementById('saveModal').classList.add('visible');
+        }
+
+        function closeSaveModal() {
+            document.getElementById('saveModal').classList.remove('visible');
+        }
+
+        function confirmSave() {
+            const name = document.getElementById('prepNameInput').value.trim();
+            if (!name) {
+                showToast('Please enter a name', 'error');
+                return;
+            }
+
+            currentPrep.name = name;
+
+            // Update prep data from editable content
+            const sections = document.querySelectorAll('.section-body[data-section]');
+            sections.forEach(section => {
+                const key = section.dataset.section;
+                if (key === 'companyOverview' || key === 'suggestedAgenda') {
+                    currentPrep.data[key] = section.innerText;
+                } else {
+                    const items = section.querySelectorAll('li');
+                    currentPrep.data[key] = Array.from(items).map(li => li.innerText);
+                }
+            });
+
+            // Check if exists
+            const existingIndex = prepHistory.findIndex(p => p.id === currentPrep.id);
+            if (existingIndex >= 0) {
+                prepHistory[existingIndex] = currentPrep;
+            } else {
+                prepHistory.unshift(currentPrep);
+            }
+
+            // Keep only last 20
+            if (prepHistory.length > 20) {
+                prepHistory = prepHistory.slice(0, 20);
+            }
+
+            localStorage.setItem('prepPro_history', JSON.stringify(prepHistory));
+            renderHistory();
+            closeSaveModal();
+            showToast('Meeting prep saved!', 'success');
+        }
+
+        // Copy to clipboard
+        function copyToClipboard() {
+            if (!currentPrep) return;
+
+            const data = currentPrep.data;
+            const text = `MEETING PREP: ${currentPrep.name}
+${currentPrep.meetingType} with ${currentPrep.contact || currentPrep.company}
+Generated: ${new Date(currentPrep.date).toLocaleDateString()}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+COMPANY OVERVIEW
+${data.companyOverview}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+RECENT NEWS & DEVELOPMENTS
+${data.recentNews.map((item, i) => `${i + 1}. ${item}`).join('\n')}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+TALKING POINTS
+${data.talkingPoints.map((item, i) => `${i + 1}. ${item}`).join('\n')}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+POTENTIAL PAIN POINTS
+${data.painPoints.map((item, i) => `${i + 1}. ${item}`).join('\n')}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+QUESTIONS TO ASK
+${data.questionsToAsk.map((item, i) => `${i + 1}. ${item}`).join('\n')}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+SUGGESTED AGENDA
+${data.suggestedAgenda}
+`;
+
+            navigator.clipboard.writeText(text).then(() => {
+                showToast('Copied to clipboard!', 'success');
+            });
+        }
+
+        // Export to Word
+        async function exportToWord() {
+            if (!currentPrep) return;
+
+            const data = currentPrep.data;
+            const { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType } = docx;
+
+            const doc = new Document({
+                sections: [{
+                    properties: {},
+                    children: [
+                        // Title
+                        new Paragraph({
+                            children: [
+                                new TextRun({
+                                    text: "MEETING PREP BRIEF",
+                                    bold: true,
+                                    size: 36,
+                                    color: "8B5CF6"
+                                })
+                            ],
+                            alignment: AlignmentType.CENTER,
+                            spacing: { after: 200 }
+                        }),
+                        new Paragraph({
+                            children: [
+                                new TextRun({
+                                    text: currentPrep.name,
+                                    bold: true,
+                                    size: 28
+                                })
+                            ],
+                            alignment: AlignmentType.CENTER,
+                            spacing: { after: 100 }
+                        }),
+                        new Paragraph({
+                            children: [
+                                new TextRun({
+                                    text: `${currentPrep.meetingType} | Generated: ${new Date(currentPrep.date).toLocaleDateString()}`,
+                                    size: 22,
+                                    color: "666666"
+                                })
+                            ],
+                            alignment: AlignmentType.CENTER,
+                            spacing: { after: 400 }
+                        }),
+
+                        // Company Overview
+                        new Paragraph({
+                            text: "COMPANY OVERVIEW",
+                            heading: HeadingLevel.HEADING_1,
+                            spacing: { before: 300, after: 200 }
+                        }),
+                        new Paragraph({
+                            text: data.companyOverview,
+                            spacing: { after: 300 }
+                        }),
+
+                        // Recent News
+                        new Paragraph({
+                            text: "RECENT NEWS & DEVELOPMENTS",
+                            heading: HeadingLevel.HEADING_1,
+                            spacing: { before: 300, after: 200 }
+                        }),
+                        ...data.recentNews.map(item =>
+                            new Paragraph({
+                                text: `• ${item}`,
+                                spacing: { after: 100 }
+                            })
+                        ),
+
+                        // Talking Points
+                        new Paragraph({
+                            text: "TALKING POINTS",
+                            heading: HeadingLevel.HEADING_1,
+                            spacing: { before: 300, after: 200 }
+                        }),
+                        ...data.talkingPoints.map(item =>
+                            new Paragraph({
+                                text: `• ${item}`,
+                                spacing: { after: 100 }
+                            })
+                        ),
+
+                        // Pain Points
+                        new Paragraph({
+                            text: "POTENTIAL PAIN POINTS",
+                            heading: HeadingLevel.HEADING_1,
+                            spacing: { before: 300, after: 200 }
+                        }),
+                        ...data.painPoints.map(item =>
+                            new Paragraph({
+                                text: `• ${item}`,
+                                spacing: { after: 100 }
+                            })
+                        ),
+
+                        // Questions
+                        new Paragraph({
+                            text: "QUESTIONS TO ASK",
+                            heading: HeadingLevel.HEADING_1,
+                            spacing: { before: 300, after: 200 }
+                        }),
+                        ...data.questionsToAsk.map(item =>
+                            new Paragraph({
+                                text: `• ${item}`,
+                                spacing: { after: 100 }
+                            })
+                        ),
+
+                        // Agenda
+                        new Paragraph({
+                            text: "SUGGESTED AGENDA",
+                            heading: HeadingLevel.HEADING_1,
+                            spacing: { before: 300, after: 200 }
+                        }),
+                        new Paragraph({
+                            text: data.suggestedAgenda,
+                            spacing: { after: 200 }
+                        })
+                    ]
+                }]
+            });
+
+            const blob = await Packer.toBlob(doc);
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${currentPrep.name.replace(/[^a-z0-9]/gi, '_')}_Prep.docx`;
+            a.click();
+            URL.revokeObjectURL(url);
+
+            showToast('Word document downloaded!', 'success');
+        }
+
+        // Settings modal
+        function openSettings() {
+            const apiKey = localStorage.getItem('prepPro_apiKey') || '';
+            document.getElementById('apiKeyInput').value = apiKey;
+            document.getElementById('settingsModal').classList.add('visible');
+        }
+
+        function closeSettings() {
+            document.getElementById('settingsModal').classList.remove('visible');
+        }
+
+        function saveApiKey() {
+            const apiKey = document.getElementById('apiKeyInput').value.trim();
+            if (!apiKey) {
+                showToast('Please enter an API key', 'error');
+                return;
+            }
+            localStorage.setItem('prepPro_apiKey', apiKey);
+            closeSettings();
+            showToast('API key saved!', 'success');
+        }
+
+        // Toast notification
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+
+            toastMessage.textContent = message;
+            toast.className = `toast ${type} visible`;
+
+            setTimeout(() => {
+                toast.classList.remove('visible');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
