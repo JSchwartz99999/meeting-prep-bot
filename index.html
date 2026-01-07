@@ -1322,8 +1322,6 @@
     </style>
 
     <script>
-        'use strict';
-
         // Load docx library asynchronously to prevent blocking
         var docxLoaded = false;
         (function() {
@@ -1334,16 +1332,16 @@
             document.head.appendChild(script);
         })();
 
-        // State management with immutable patterns
-        const AppState = {
+        // State management
+        var AppState = {
             currentPrep: null,
             prepHistory: [],
             deleteTargetIndex: null,
             isGenerating: false
         };
 
-        // Meeting type labels (constant)
-        const MEETING_TYPE_LABELS = Object.freeze({
+        // Meeting type labels
+        var MEETING_TYPE_LABELS = {
             'discovery': 'Discovery Call',
             'demo': 'Product Demo',
             'negotiation': 'Negotiation',
@@ -1353,36 +1351,57 @@
             'executive': 'Executive Briefing',
             'kickoff': 'Project Kickoff',
             'other': 'General Meeting'
-        });
+        };
 
-        // Storage keys (constant)
-        const STORAGE_KEYS = Object.freeze({
+        // Storage keys
+        var STORAGE_KEYS = {
             API_KEY: 'prepPro_apiKey',
             HISTORY: 'prepPro_history',
             PRODUCT: 'prepPro_product'
-        });
+        };
 
-        // Initialize application
-        document.addEventListener('DOMContentLoaded', () => {
+        // Initialize application when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeApp);
+        } else {
             initializeApp();
-        });
+        }
+
+        // Also add window.onload as a fallback
+        window.onload = function() {
+            if (!window.appInitialized) {
+                initializeApp();
+            }
+        };
 
         function initializeApp() {
-            loadHistory();
-            loadSavedProduct();
-            setupCharacterCounters();
-            setupFormValidation();
-            setupKeyboardNavigation();
-            setupEventListeners();
+            // Prevent double initialization
+            if (window.appInitialized) return;
+            window.appInitialized = true;
 
-            // Check for API key
-            const apiKey = getStoredApiKey();
-            if (!apiKey) {
-                setTimeout(() => openSettings(), 500);
+            try {
+                loadHistory();
+                loadSavedProduct();
+                setupCharacterCounters();
+                setupFormValidation();
+                setupKeyboardNavigation();
+                setupEventListeners();
+
+                // Check for API key
+                var apiKey = getStoredApiKey();
+                if (!apiKey) {
+                    setTimeout(openSettings, 500);
+                }
+            } catch (e) {
+                // Show error visibly to user
+                var errorDiv = document.createElement('div');
+                errorDiv.style.cssText = 'position:fixed;top:0;left:0;right:0;background:red;color:white;padding:20px;z-index:99999;text-align:center;';
+                errorDiv.textContent = 'Error: ' + e.message;
+                document.body.appendChild(errorDiv);
             }
         }
 
-        // Setup all event listeners (more reliable than inline onclick)
+        // Setup all event listeners
         function setupEventListeners() {
             // Sidebar buttons
             const newPrepBtn = document.getElementById('newPrepBtn');
@@ -1439,8 +1458,6 @@
             // Form submission
             const prepForm = document.getElementById('prepForm');
             if (prepForm) prepForm.addEventListener('submit', handleFormSubmit);
-
-            console.log('Event listeners initialized');
         }
 
         // Secure storage functions
@@ -1448,7 +1465,6 @@
             try {
                 return localStorage.getItem(STORAGE_KEYS.API_KEY);
             } catch (e) {
-                console.error('Failed to access localStorage:', e);
                 return null;
             }
         }
@@ -1461,7 +1477,7 @@
                     localStorage.removeItem(STORAGE_KEYS.API_KEY);
                 }
             } catch (e) {
-                console.error('Failed to store API key:', e);
+                log.error('Failed to store API key:', e);
                 showToast('Failed to save API key', 'error');
             }
         }
@@ -1602,7 +1618,7 @@
                     }
                 }
             } catch (e) {
-                console.error('Failed to load saved product:', e);
+                log.error('Failed to load saved product:', e);
             }
         }
 
@@ -1614,7 +1630,7 @@
                     localStorage.setItem(STORAGE_KEYS.PRODUCT, product);
                 }
             } catch (e) {
-                console.error('Failed to save product:', e);
+                log.error('Failed to save product:', e);
             }
         }
 
@@ -1630,7 +1646,7 @@
                     }
                 }
             } catch (e) {
-                console.error('Failed to load history:', e);
+                log.error('Failed to load history:', e);
                 AppState.prepHistory = [];
             }
         }
@@ -1906,7 +1922,7 @@ Be specific, strategic, and actionable. Avoid generic advice. Tailor everything 
                 showToast('Meeting prep generated successfully!', 'success');
 
             } catch (error) {
-                console.error('Error:', error);
+                log.error('Error:', error);
 
                 if (error.name === 'AbortError') {
                     showToast('Request timed out. Please try again.', 'error');
@@ -2058,7 +2074,7 @@ Be specific, strategic, and actionable. Avoid generic advice. Tailor everything 
                 closeSaveModal();
                 showToast('Meeting prep saved!', 'success');
             } catch (e) {
-                console.error('Failed to save history:', e);
+                log.error('Failed to save history:', e);
                 showToast('Failed to save - storage may be full', 'error');
             }
         }
@@ -2092,7 +2108,7 @@ Be specific, strategic, and actionable. Avoid generic advice. Tailor everything 
                 closeDeleteModal();
                 showToast('Meeting prep deleted', 'success');
             } catch (e) {
-                console.error('Failed to delete:', e);
+                log.error('Failed to delete:', e);
                 showToast('Failed to delete prep', 'error');
             }
         }
@@ -2301,7 +2317,7 @@ ${data.suggestedAgenda}
 
                 showToast('Word document downloaded!', 'success');
             } catch (e) {
-                console.error('Export error:', e);
+                log.error('Export error:', e);
                 showToast('Failed to export document', 'error');
             }
         }
@@ -2380,6 +2396,24 @@ ${data.suggestedAgenda}
                 toast.classList.remove('visible');
             }, 4000);
         }
+
+        // Expose functions to global scope for inline event handlers
+        window.loadPrep = loadPrep;
+        window.openDeleteModal = openDeleteModal;
+        window.startNewPrep = startNewPrep;
+        window.openSettings = openSettings;
+        window.closeSettings = closeSettings;
+        window.saveApiKey = saveApiKey;
+        window.toggleApiKeyVisibility = toggleApiKeyVisibility;
+        window.savePrep = savePrep;
+        window.closeSaveModal = closeSaveModal;
+        window.confirmSave = confirmSave;
+        window.closeDeleteModal = closeDeleteModal;
+        window.confirmDelete = confirmDelete;
+        window.copyToClipboard = copyToClipboard;
+        window.exportToWord = exportToWord;
+        window.toggleSidebar = toggleSidebar;
+        window.closeSidebar = closeSidebar;
     </script>
 </body>
 </html>
