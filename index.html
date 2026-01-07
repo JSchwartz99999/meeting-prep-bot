@@ -1043,7 +1043,7 @@
                 </div>
             </div>
 
-            <button class="new-prep-btn" id="newPrepBtn" aria-label="Create new meeting prep" onclick="alert('Button clicked!'); startNewPrep();">
+            <button class="new-prep-btn" id="newPrepBtn" aria-label="Create new meeting prep" onclick="startNewPrep()">
                 <span aria-hidden="true">+</span> New Meeting Prep
             </button>
 
@@ -1657,40 +1657,36 @@
 
         // Start new prep
         function startNewPrep() {
-            try {
-                AppState.currentPrep = null;
-                document.getElementById('formPanel').style.display = 'block';
-                document.getElementById('outputPanel').classList.remove('visible');
+            AppState.currentPrep = null;
+            document.getElementById('formPanel').style.display = 'block';
+            document.getElementById('outputPanel').classList.remove('visible');
 
-                // Clear form
-                var form = document.getElementById('prepForm');
-                if (form) form.reset();
+            // Clear form
+            var form = document.getElementById('prepForm');
+            if (form) form.reset();
 
-                // Keep product field populated
-                loadSavedProduct();
+            // Keep product field populated
+            loadSavedProduct();
 
-                // Clear character counts
-                var contextCount = document.getElementById('context-count');
-                if (contextCount) contextCount.textContent = '0 / 2000';
+            // Clear character counts
+            var contextCount = document.getElementById('context-count');
+            if (contextCount) contextCount.textContent = '0 / 2000';
 
-                // Clear any error states
-                if (form) {
-                    var errorEls = form.querySelectorAll('.error');
-                    for (var i = 0; i < errorEls.length; i++) {
-                        errorEls[i].classList.remove('error');
-                    }
-                    var errorMsgs = form.querySelectorAll('.error-message');
-                    for (var j = 0; j < errorMsgs.length; j++) {
-                        errorMsgs[j].textContent = '';
-                        errorMsgs[j].classList.remove('visible');
-                    }
+            // Clear any error states
+            if (form) {
+                var errorEls = form.querySelectorAll('.error');
+                for (var i = 0; i < errorEls.length; i++) {
+                    errorEls[i].classList.remove('error');
                 }
-
-                renderHistory();
-                closeSidebar();
-            } catch (e) {
-                alert('startNewPrep error: ' + e.message);
+                var errorMsgs = form.querySelectorAll('.error-message');
+                for (var j = 0; j < errorMsgs.length; j++) {
+                    errorMsgs[j].textContent = '';
+                    errorMsgs[j].classList.remove('visible');
+                }
             }
+
+            renderHistory();
+            closeSidebar();
         }
 
         // Form submit handler
